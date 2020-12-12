@@ -25,7 +25,6 @@ Window {
         anchors.bottom: textEditor.top
         delegate: Component {
             Text {
-                height: 20
                 text: model.msg
             }
         }
@@ -49,13 +48,12 @@ Window {
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             id: commandLine
-            text:  "enter command"
 
             // for logging command and request
             onAccepted: {
                 //console.log(text)
                 var message = {}
-                message.msg = text
+                message.msg = root.log(text)
                 messageModel.append(message)
                 request(text)
                 commandLine.clear()
@@ -73,12 +71,12 @@ Window {
                 http.setRequestHeader("Connection", "close");
 
                 http.onreadystatechange = function() { // Call a function when the state changes.
-                    if (http.readyState == 4) {
-                        if (http.status == 200) {
-                            console.log(http.response)
-                            root.newMessage(http.response)
+                    if (http.readyState === 4) {
+                        if (http.status === 200) {
+                            var resp = http.response
+                            root.newMessage(resp)
                         } else {
-                            console.log("error: " + http.status)
+                            root.newMessage("status: " + http.status)
                         }
                     }
                 }
@@ -89,7 +87,21 @@ Window {
     // for logging from golang server
     onNewMessage: {
         var message = {}
-        message.msg = msg
+        message.msg = log(msg)
         messageModel.append(message)
+    }
+
+    function log(msg) {
+        // 2020/12/12 22:34:07
+        var date = new Date()
+        var day = date.getDate()
+        var month = date.getMonth()
+        var year = date.getFullYear()
+        var hh = date.getHours()
+        var mm = date.getMinutes()
+        var ss = date.getSeconds()
+        var now = year + "/" + month + "/" + day + " " +
+            hh + ":" + mm + ":" + ss
+        return "[" + now + "]" + " " + msg
     }
 }
