@@ -1,14 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
-/*
-  State
-    ...
-
-  Orders
-    -...
-
-  */
+import "server.js" as Server
 
 Window {
     id: root
@@ -17,6 +10,11 @@ Window {
     visible: true
     title: qsTr("Congra")
     signal newMessage(string msg)
+
+    Component.onCompleted: {
+        Server.handler()
+        Server.listen(":8080")
+    }
     ListView{
         width: parent.width
         height: parent.height
