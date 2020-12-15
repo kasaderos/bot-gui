@@ -1,21 +1,18 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
-/*
-  State
-    ...
-
-  Orders
-    -...
-
-  */
 
 Window {
+    id: root
     width: 320
     height: 440
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("Congra")
+    signal newMessage(string msg)
 
+    Component.onCompleted: {
+
+    }
     ListView{
         width: parent.width
         height: parent.height
@@ -42,20 +39,65 @@ Window {
         color: Qt.rgba(0.9, 0.9, 0.9, 1.0)
 
         TextInput {
-            signal newMessage(string msg)
+
             width: parent.width * 0.9
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             id: commandLine
-            text:  "enter command"
 
+            // for logging command and request
             onAccepted: {
-                console.log(text)
+                //console.log(text)
                 var message = {}
-                message.msg = text
+                message.msg = root.log(text)
                 messageModel.append(message)
+                request(text)
                 commandLine.clear()
             }
+
+            function request(param) {
+                var http = new XMLHttpRequest()
+                var url = "http://localhost:8080";
+                var params = "num="+param;
+                http.open("GET", url, true);
+
+                // Send the proper header information along with the request
+                http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                http.setRequestHeader("Content-length", params.length);
+                http.setRequestHeader("Connection", "close");
+
+                http.onreadystatechange = function() { // Call a function when the state changes.
+                    if (http.readyState === 4) {
+                        if (http.status === 200) {
+                            var resp = http.response
+                            root.newMessage(resp)
+                        } else {
+                            root.newMessage("status: " + http.status)
+                        }
+                    }
+                }
+                http.send(params);
+            }
         }
+    }
+    // for logging from golang server
+    onNewMessage: {
+        var message = {}
+        message.msg = log(msg)
+        messageModel.append(message)
+    }
+
+    function log(msg) {
+        // 2020/12/12 22:34:07
+        var date = new Date()
+        var day = date.getDate()
+        var month = date.getMonth()
+        var year = date.getFullYear()
+        var hh = date.getHours()
+        var mm = date.getMinutes()
+        var ss = date.getSeconds()
+        var now = year + "/" + month + "/" + day + " " +
+            hh + ":" + mm + ":" + ss
+        return "[" + now + "]" + " " + msg
     }
 }
