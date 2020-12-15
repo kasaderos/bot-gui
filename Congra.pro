@@ -1,5 +1,7 @@
 QT += quick
 
+LIBS += -lqhttpserver
+
 CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
@@ -8,6 +10,7 @@ CONFIG += c++11
 
 SOURCES += \
         http.cpp \
+        httpserver.cpp \
         main.cpp
 
 RESOURCES += qml.qrc
@@ -26,4 +29,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 ANDROID_ABIS = armeabi-v7a
 
 HEADERS += \
-    http.h
+    http.h \
+    httpserver.h
