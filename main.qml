@@ -1,7 +1,6 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
-import "server.js" as Server
 
 Window {
     id: root
@@ -12,8 +11,7 @@ Window {
     signal newMessage(string msg)
 
     Component.onCompleted: {
-        Server.handler()
-        Server.listen(":8080")
+
     }
     ListView{
         width: parent.width
