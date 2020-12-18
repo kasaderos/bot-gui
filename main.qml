@@ -1,6 +1,7 @@
 import QtQuick 2.12
 import QtQuick.Window 2.12
 import QtQuick.Controls 2.12
+import Server 1.0
 
 Window {
     id: root
@@ -10,9 +11,20 @@ Window {
     title: qsTr("Congra")
     signal newMessage(string msg)
 
-    Component.onCompleted: {
+    HttpServer {
+        id: server
+        onStarted: {
+            root.newMessage("Started on port 8080")
+        }
 
+        onNewMessageReceived: {
+            root.newMessage(msg)
+        }
     }
+
+//    Component.onCompleted: {
+//    }
+
     ListView{
         width: parent.width
         height: parent.height
@@ -48,6 +60,7 @@ Window {
             // for logging command and request
             onAccepted: {
                 //console.log(text)
+
                 var message = {}
                 message.msg = root.log(text)
                 messageModel.append(message)
@@ -80,12 +93,14 @@ Window {
             }
         }
     }
+
     // for logging from golang server
     onNewMessage: {
         var message = {}
         message.msg = log(msg)
         messageModel.append(message)
     }
+
 
     function log(msg) {
         // 2020/12/12 22:34:07

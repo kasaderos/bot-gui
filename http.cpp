@@ -6,13 +6,10 @@ Http::Http()
 }
 
 void Http::get(QUrl url) {
-
     connect(mgr, SIGNAL(finished(QNetworkReply*)),
                 this, SLOT(replyFinished(QNetworkReply*)));
     mgr->get(QNetworkRequest(url));
-
 }
-
 
 void Http::replyFinished (QNetworkReply *reply)
 {
@@ -28,6 +25,5 @@ void Http::replyFinished (QNetworkReply *reply)
         QString qmsg(msg);
         emit newMessage(qmsg);
     }
-
     reply->deleteLater();
 }
